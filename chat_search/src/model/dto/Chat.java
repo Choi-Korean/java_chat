@@ -1,7 +1,10 @@
 package model.dto;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -29,6 +32,7 @@ public class Chat{
 		this.status = status;
 	}
 	
+	
 	public static Object stringToJson(String v) {
 			
 			// JSON 포멧과 관련된 작업 - 문법 검증 및 변환
@@ -46,30 +50,67 @@ public class Chat{
 		}
 	
 	
-	public static ArrayList<Chat> getChatAll() throws IOException{
-		BufferedReader in = new BufferedReader(new FileReader("D:\\AIJavaProgramming\\lab\\20220509\\01.Java\\java_chat\\chat_search\\src\\database\\chat.json"));
-		StringBuilder sb = new StringBuilder();
-		String readData = in.readLine();
+	public static ArrayList<Chat> getChatAll(){
 		
-		while(readData != null) {
-			sb.append(readData);
-			readData = in.readLine();
-		}
-		
-		JSONObject o = (JSONObject)stringToJson(sb.toString());
-		JSONObject now = null;
 		ArrayList<Chat> c = new ArrayList<Chat>();
 		
-		for(int i = 1; i < o.size() + 1; i ++){
-			now = (JSONObject)o.get("" + i);
-			c.add(new Chat(now.get("id").toString(), now.get("writer").toString(), now.get("content").toString(), now.get("creation").toString(), now.get("status").toString()));
+		try {
+			BufferedReader in = new BufferedReader(new FileReader("D:\\AIJavaProgramming\\lab\\20220509\\01.Java\\java_chat\\chat_search\\src\\database\\chat.json"));
+			StringBuilder sb = new StringBuilder();
+			String readData = in.readLine();
+			
+			while(readData != null) {
+				sb.append(readData);
+				readData = in.readLine();
+			}
+			
+			JSONObject o = (JSONObject)stringToJson(sb.toString());
+			JSONObject now = null;
+			
+			for(int i = 1; i < o.size() + 1; i ++){
+				now = (JSONObject)o.get("" + i);
+				c.add(new Chat(now.get("id").toString(), now.get("writer").toString(), now.get("content").toString(), now.get("creation").toString(), now.get("status").toString()));
+			}
+			return c;
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
+		
 		return c;
 	}
-
-
 	
+	public static void setChatAll(ArrayList<Chat> chats) throws IOException{
+		BufferedWriter out = new BufferedWriter(new FileWriter(".\\src\\database\\chat.json"));
+		
+		int chatsSize = chats.size();
+		
+		out.write("{");
+		
+		for(Chat chat:chats) {
+			out.write("  \"" + chat.getId() + "\": {\n");
+			out.write("\"id\": \"" + chat.getId() + "\",\n");
+			out.write("\"writer\": \"" + chat.getWriter() + "\",\n");
+			out.write("\"content\": \"" + chat.getContent() + "\",\n");
+			out.write("\"creation\": \"" + chat.getCreation() + "\",\n");
+			out.write("\"status\": \"" + chat.getStatus() + "\"\n  }");
+			
+			chatsSize -= 1;
+			if(chatsSize != 0) {
+				out.write(",\n");
+			}else {
+				out.write("\n");
+			}
+		}
+		
+		out.write("}");
+		
+		if(out != null) {
+			out.close();
+			out = null;
+		}
 	
-	
+	}
 }

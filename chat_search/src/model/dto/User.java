@@ -1,7 +1,10 @@
 package model.dto;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -19,8 +22,7 @@ public class User {
 	private String password;
 	private String email;
 	
-	
-	public User(String id, String userName, String password, String email) {
+	public User(String id, String userName, String password, String email){
 		super();
 		this.id = id;
 		this.userName = userName;
@@ -44,26 +46,69 @@ public class User {
 		}
 	}
 	
-	public static ArrayList<User> getUserAll() throws IOException{
-		BufferedReader in = new BufferedReader(new FileReader("D:\\AIJavaProgramming\\lab\\20220509\\01.Java\\java_chat\\chat_search\\src\\database\\user.json"));
-		StringBuilder sb = new StringBuilder();
-		String readData = in.readLine();
+	public static ArrayList<User> getUserAll(){
 		
-		while(readData != null) {
-			sb.append(readData);
-			readData = in.readLine();
-		}
-		
-		JSONObject o = (JSONObject)stringToJson(sb.toString());
-		JSONObject now = null;
 		ArrayList<User> c = new ArrayList<User>();
 		
-		for(int i = 1; i < o.size() + 1; i ++){
-			now = (JSONObject)o.get("" + i);
-			c.add(new User(now.get("id").toString(), now.get("userName").toString(), now.get("password").toString(), now.get("email").toString()));
+		try {
+			BufferedReader in = new BufferedReader(new FileReader("D:\\AIJavaProgramming\\lab\\20220509\\01.Java\\java_chat\\chat_search\\src\\database\\user.json"));
+			String readData = in.readLine();
+			StringBuilder sb = new StringBuilder();
+			
+			while(readData != null) {
+				sb.append(readData);
+				readData = in.readLine();
+				}
+			
+			JSONObject o = (JSONObject)stringToJson(sb.toString());
+			JSONObject now = null;
+			
+			for(int i = 1; i < o.size() + 1; i ++){
+				now = (JSONObject)o.get("" + i);
+				c.add(new User(now.get("id").toString(), now.get("userName").toString(), now.get("password").toString(), now.get("email").toString()));
+			}
+			return c;
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		return c;
+		
+	}
+	
+	public static void setUserAll(ArrayList<User> users) throws IOException{
+		BufferedWriter out = new BufferedWriter(new FileWriter(".\\src\\database\\user.json"));
+		
+		int usersSize = users.size();
+		
+		out.write("{");
+		
+		for(User user:users) {
+			out.write("  \"" + user.getId() + "\": {\n");
+			out.write("\"id\": \"" + user.getId() + "\",\n");
+			out.write("\"userName\": \"" + user.getUserName() + "\",\n");
+			out.write("\"password\": \"" + user.getPassword() + "\",\n");
+			out.write("\"email\": \"" + user.getEmail() + "\"\n  }");
+			
+			usersSize -= 1;
+			if(usersSize != 0) {
+				out.write(",\n");
+			}else {
+				out.write("\n");
+			}
+		}
+		
+		out.write("}");
+		
+		if(out != null) {
+			out.close();
+			out = null;
+		}
+	
 	}
 
 

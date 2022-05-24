@@ -10,5 +10,24 @@
     "userName": "pwd12",
     "password": "1234",
     "email": "pwd@naver.com"
+  },
+    "3": {
+    "id": "3",
+    "userName": "json123",
+    "password": "1234",
+    "email": "json@naver.com"
+  },
+    "4": {
+    "id": "4",
+    "userName": "super",
+    "password": "1234",
+    "email": "super@naver.com"
+  }
+  ,
+    "5": {
+    "id": "5",
+    "userName": "admin",
+    "password": "1234",
+    "email": "admin@naver.com"
   }
 }
